@@ -20,11 +20,21 @@ public class Git {
         // System.out.println(initRepoTester());
         // Test creating respository when it already exists (should print "Git
         // Repository already exists")
-        // initRepo();
+        initRepo();
         // System.out.println(initRepoTester());
-        blobTester(Paths.get("/Users/oliviakong/Desktop/everything basically/forkedcodetest/newFolder"), false);
+        blobTester(Paths.get("/Users/RiyanKadribegovic/Desktop/School/12th/Honors Topics in Computer Science/git-project-olivia"), false);
         // Path path = Paths.get("/Users/oliviakong/Desktop/everything basically/forkedcodetest/newFolder");
         // createBlob(path, false);
+    }
+
+    public Git () {
+        try {
+        initRepo();
+        
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
   
     //Tests initRepo() for when directory already exists or doesn't exist yet
