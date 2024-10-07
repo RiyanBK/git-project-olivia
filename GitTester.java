@@ -7,5 +7,6 @@ public class GitTester {
         //Testing git creation and repo initialization:
 
         //
+        Commit commitTest = new Commit ("Riyan", "hello");
     }
 }
