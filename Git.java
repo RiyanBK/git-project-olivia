@@ -68,11 +68,13 @@ public class Git {
         // along the way
         Path file1 = Paths.get("./git/objects");
         File file2 = new File("./git/index");
+        File file3 = new File ("./git/HEAD");
         // Makes directories - will be false if they already exist
         boolean bool1 = file1.toFile().mkdirs();
         boolean bool2 = file2.createNewFile();
+        boolean bool3 = file3.createNewFile();
         // Returns "Git repository already exists" if both directories already exist
-        if (!(bool1) && !(bool2)) {
+        if (!(bool1) && !(bool2) && !(bool3)) {
             System.out.println("Git Repository already exists");
         }
     }
