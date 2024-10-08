@@ -25,17 +25,17 @@ public class Commit {
         toCommit.append("\nmessage: " + message);
         String commitContent = toCommit.toString();
         try {
-        Files.createTempFile ("./contentToHash", null);
-        FileWriter writer = new FileWriter(new File ("./contentToHash"));
-        writer.write (commitContent);
-        String commitHash = Git.sha1(Paths.get("./contentToHash")); 
-        writer.close();
-        writer = new FileWriter(new File ("./git/HEAD"));
-        writer.write (commitHash);
-        writer.close();
-        writer = new FileWriter(new File ("./git/index"));
-        writer.write("");
-        writer.close();
+            Files.createTempFile("./contentToHash", null);
+            FileWriter writer = new FileWriter(new File("./contentToHash"));
+            writer.write(commitContent);
+            String commitHash = Git.sha1(Paths.get("./contentToHash"));
+            writer.close();
+            writer = new FileWriter(new File("./git/HEAD"));
+            writer.write(commitHash);
+            writer.close();
+            writer = new FileWriter(new File("./git/index"));
+            writer.write("");
+            writer.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -56,20 +56,41 @@ public class Commit {
         }
     }
 
-    public void writeToIndex () {
+    public void writeToIndex() {
+       //part 1 finds the hash of the previous tree
+        //currently we have the hash of the commit
+        String oldTreeHash = "";
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("./git/objects/" + headHash)); //this finds the commit
+            //read just after the first 6 characters of the second line ("tree: " + hash of tree) we want the hash of the tree
+            reader.readLine();
+            oldTreeHash = reader.readLine();
+            oldTreeHash = oldTreeHash.substring(6);
+            reader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (oldTreeHash.equals ("")) {
+            return;
+        }
 
+        //part 2 actually writes to the file
+        //read index list of previous tree
+        //add all files not already listed in index to index
+        //end
     }
 
-    public void getTreeContents() { //currently only works for index file
+    public void getTreeContents() { // currently only works for index file
         // StringBuffer content = new StringBuffer("");
         // try {
-        //     BufferedReader reader = new BufferedReader(new FileReader(new File("./git/index")));
-        //     while (reader.ready()) {
-        //         content.append((char) reader.read());
-        //     }
-        //     reader.close();
+        // BufferedReader reader = new BufferedReader(new FileReader(new
+        // File("./git/index")));
+        // while (reader.ready()) {
+        // content.append((char) reader.read());
+        // }
+        // reader.close();
         // } catch (Exception e) {
-        //     e.printStackTrace();
+        // e.printStackTrace();
         // }
         try {
             treeHash = Git.sha1(Paths.get("./git/index"));
