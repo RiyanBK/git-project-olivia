@@ -26,16 +26,6 @@ public class Git {
         // Path path = Paths.get("/Users/oliviakong/Desktop/everything basically/forkedcodetest/newFolder");
         // createBlob(path, false);
     }
-
-    public Git () {
-        try {
-        initRepo();
-        
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
   
     //Tests initRepo() for when directory already exists or doesn't exist yet
     public static String initRepoTester() throws IOException{
@@ -305,6 +295,19 @@ public class Git {
         reader.close();
         boolean successful = tempFile.renameTo(inputFile);
         System.out.println("Entry deleted in index: " + successful);
+    }
+
+    public static void deleteEverything(Path path) {
+        File file = new File (path.toString());
+        if (file.listFiles() != null) {
+            for (File childFile : file.listFiles()) {
+                if (childFile.isDirectory()) {
+                    deleteEverything(childFile.toPath());
+                }
+                childFile.delete();
+            }
+            file.delete();
+        }
     }
 
 }

@@ -25,17 +25,22 @@ public class Commit {
         toCommit.append("\nmessage: " + message);
         String commitContent = toCommit.toString();
         try {
-            Files.createTempFile("./contentToHash", null);
+            //create a file to put the commit in
+            //create a blob of it
+            //get that hash and put it in head
+
+            Files.createTempFile("contentToHash", ".txt");
             FileWriter writer = new FileWriter(new File("./contentToHash"));
             writer.write(commitContent);
-            String commitHash = Git.sha1(Paths.get("./contentToHash"));
             writer.close();
+            String commitHash = Git.sha1(Paths.get("./contentToHash"));
             writer = new FileWriter(new File("./git/HEAD"));
             writer.write(commitHash);
             writer.close();
-            writer = new FileWriter(new File("./git/index"));
-            writer.write("");
-            writer.close();
+            Git.createBlob(Paths.get("./contentToHash"), false);
+            // writer = new FileWriter(new File("./git/index"));
+            // writer.write("");
+            // writer.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -62,9 +67,15 @@ public class Commit {
         String oldTreeHash = "";
         try {
             BufferedReader reader = new BufferedReader(new FileReader("./git/objects/" + headHash)); //this finds the commit
-            //read just after the first 6 characters of the second line ("tree: " + hash of tree) we want the hash of the tree
+            //read just after the first 6 characters of the second line ("tree: " + hash of tree) we just want the hash of the tree
             reader.readLine();
-            oldTreeHash = reader.readLine();
+            //oldTreeHash = (String)reader.readLine();
+            for (int i = 0; i < 6; i++){
+                reader.read();
+            }
+            while(reader.ready()) {
+                oldTreeHash = oldTreeHash + (char)(reader.read());
+            }
             oldTreeHash = oldTreeHash.substring(6);
             reader.close();
         } catch (Exception e) {
