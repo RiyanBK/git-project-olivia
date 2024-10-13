@@ -37,10 +37,14 @@ public class Commit {
             writer = new FileWriter(new File("./git/HEAD"));
             writer.write(commitHash);
             writer.close();
-            Git.createBlob(Paths.get("./contentToHash"), false);
-            // writer = new FileWriter(new File("./git/index"));
-            // writer.write("");
-            // writer.close();
+            writer = new FileWriter(new File ("./git/objects/" + commitHash));
+            writer.write (commitContent);
+            writer.close();
+
+            //overwrites index once commit is created
+            writer = new FileWriter(new File("./git/index"));
+            writer.write("");
+            writer.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -67,10 +71,10 @@ public class Commit {
         String oldTreeHash = "";
         try {
             BufferedReader reader = new BufferedReader(new FileReader("./git/objects/" + headHash)); //this finds the commit
-            //read just after the first 6 characters of the second line ("tree: " + hash of tree) we just want the hash of the tree
+            //read just after the first 6 characters of the second line ("parent: " + hash of parent) we just want the hash of the parent
             reader.readLine();
             //oldTreeHash = (String)reader.readLine();
-            for (int i = 0; i < 6; i++){
+            for (int i = 0; i < 8; i++){
                 reader.read();
             }
             while(reader.ready()) {

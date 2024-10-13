@@ -4,6 +4,7 @@ import java.nio.file.Paths;
 
 public class GitTester {
     public static void main (String [] args) {
+        Git.deleteEverything(Paths.get("git"));
         try {
         //Testing git creation and repo initialization:
         File testFile = new File ("testFile.txt");
