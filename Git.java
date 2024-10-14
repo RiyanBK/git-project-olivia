@@ -171,9 +171,29 @@ public class Git {
 
                 // index file line
                 if (parent.equals("")) {
-                    sb.append("tree " + hash + " " + fileToSave.toFile().getName() + "\n");
+                    String toWrite = "tree " + hash + " " + fileToSave.toFile().getName() + "\n";
+                    BufferedReader reader = new BufferedReader(new FileReader ("./git/index"));
+                    while (reader.ready()) {
+                        if (reader.readLine().equals(toWrite)){
+                            sb.append(toWrite);
+                        }
+                        else {
+                            System.out.println ("already in index");
+                        }
+                    }
+                    reader.close();
                 } else {
-                    sb.append("tree " + hash + " " + parent + "/" + fileToSave.toFile().getName() + "\n");
+                    String toWrite = "tree " + hash + " " + parent + "/" + fileToSave.toFile().getName() + "\n";
+                    BufferedReader reader = new BufferedReader(new FileReader ("./git/index"));
+                    while (reader.ready()) {
+                        if (reader.readLine().equals(toWrite)){
+                            sb.append(toWrite);
+                        }
+                        else {
+                            System.out.println ("already in index");
+                        }
+                    }
+                    reader.close();
                 }
             } else { // if directory is not empty
                 // compresses if true, unzips in order to copy data
