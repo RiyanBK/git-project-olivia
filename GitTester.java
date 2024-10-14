@@ -27,6 +27,9 @@ public class GitTester {
             BufferedWriter writer = new BufferedWriter(new FileWriter("newTestFile.txt"));
             writer.write("insert test content here");
             writer.close();
+            writer = new BufferedWriter(new FileWriter ("testDir/testFile2.txt", true));
+            writer.write ("\nand more");
+            writer.close();
             // do the commit
             dir.stage("newTestFile.txt");
             dir.commit("Riyan", "part 2");
