@@ -20,6 +20,10 @@ public class Git implements GitInterface {
 
     public void stage(String filePath) {
         try {
+            if (filePath.contains("/")) {
+                int charIndex = filePath.indexOf("/");
+                filePath = filePath.substring(0, charIndex);
+            }
             Git.createBlob(Paths.get(filePath), false);
         } catch (Exception e) {
             e.printStackTrace();
@@ -115,18 +119,47 @@ public class Git implements GitInterface {
 
             // part 2 actually writes to the file
             reader = new BufferedReader(new FileReader("./git/objects/" + oldTreeHash));
+            BufferedWriter writer = new BufferedWriter(new FileWriter ("./git/index", true));
             while (reader.ready()) { // read index list of previous tree
-                String nextBlob = reader.readLine().substring(46);
-                if (!nextBlob.contains("/")) { // really jank technical way of doing this but it works!
-                    Git.createBlob(Paths.get(nextBlob), false);
+                String blobLine = reader.readLine();
+                if (blobLine.equals("")){
+                    break;
                 }
+                String nextBlob = blobLine.substring(46);
+                if (!fileInIndex(nextBlob)) {
+                    writer.write(blobLine + "\n");
+                }
+                // if (!nextBlob.contains("/")) { // really jank technical way of doing this but it works!
+                //     Git.createBlob(Paths.get(nextBlob), false);
+                // }
                 // add all files not already listed in index to index
+            }
+            reader.close();
+            writer.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public boolean fileInIndex (String fileName) {
+        int counter = 0;
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("./git/index"));
+            while (reader.ready()) {
+                if (reader.readLine().substring(46).equals(fileName)) {
+                    counter++;
+                }
             }
             reader.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        if (counter > 0) {
+            return true;
+        } else {
+            return false;
+        }   
     }
 
     public void getTreeContents() {
@@ -155,6 +188,7 @@ public class Git implements GitInterface {
         int year = date.get(Calendar.YEAR);
         return ((month + 1) + "/" + day + "/" + year);
     }
+
     public static void main(String[] args) throws DigestException, NoSuchAlgorithmException, IOException {
         // Test creating repository when it doesn't exist (should print "Initialized
         // repository and deleted files")
@@ -171,9 +205,10 @@ public class Git implements GitInterface {
         // createBlob(path, false);
     }
 
-    public Git () {
+    public Git() {
         try {
-        initRepo(); } catch (Exception e) {
+            initRepo();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -317,6 +352,26 @@ public class Git implements GitInterface {
         return createBlob(fileToSave, compress, "");
     }
 
+    private static boolean inIndex(String line) {
+        int counter = 0;
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("./git/index"));
+            while (reader.ready()) {
+                if (reader.readLine().equals(line)) {
+                    counter++;
+                }
+            }
+            reader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (counter > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     private static Path createBlob(Path fileToSave, boolean compress, String parent)
             throws DigestException, NoSuchAlgorithmException, IOException {
         StringBuilder sb = new StringBuilder();
@@ -337,35 +392,19 @@ public class Git implements GitInterface {
 
                 // index file line
                 if (parent.equals("")) {
-                    String toWrite = "tree " + hash + " " + fileToSave.toFile().getName() + "\n";
-                    BufferedReader reader = new BufferedReader(new FileReader("./git/index"));
-                    int counter = 0;
-                    while (reader.ready()) {
-                        if (reader.readLine().equals(toWrite)) {
-                            counter++;
-                        }
-                    }
-                    if (counter > 0) {
+                    String toWrite = "tree " + hash + " " + fileToSave.toFile().getName();
+                    if (inIndex(toWrite)) {
                         System.out.println("already exists in index");
                     } else {
-                        sb.append(toWrite);
+                        sb.append(toWrite).append("\n");
                     }
-                    reader.close();
                 } else {
-                    String toWrite = "tree " + hash + " " + parent + "/" + fileToSave.toFile().getName() + "\n";
-                    BufferedReader reader = new BufferedReader(new FileReader("./git/index"));
-                    int counter = 0;
-                    while (reader.ready()) {
-                        if (reader.readLine().equals(toWrite)) {
-                            counter++;
-                        }
-                    }
-                    if (counter > 0) {
+                    String toWrite = "tree " + hash + " " + parent + "/" + fileToSave.toFile().getName();
+                    if (inIndex(toWrite)) {
                         System.out.println("already exists in index");
                     } else {
-                        sb.append(toWrite);
+                        sb.append(toWrite).append("\n");
                     }
-                    reader.close();
                 }
             } else { // if directory is not empty
                 // compresses if true, unzips in order to copy data

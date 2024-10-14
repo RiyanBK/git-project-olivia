@@ -13,8 +13,14 @@ public class GitTester {
             File testDir = new File("testDir");
             File testFile2 = new File("testDir/testFile2.txt");
             testFile.createNewFile();
+            BufferedWriter writer = new BufferedWriter(new FileWriter("testFile.txt"));
+            writer.write("hello!!!!");
+            writer.close();
             testDir.mkdir();
             testFile2.createNewFile();
+            writer = new BufferedWriter(new FileWriter("testDir/testFile2.txt"));
+            writer.write("yoooooo");
+            writer.close();
             // do the commit
             Git dir = new Git();
             dir.stage("testFile.txt");
@@ -22,9 +28,10 @@ public class GitTester {
             dir.commit("Riyan", "part 1");
 
             // part 2: create second commit
+            // this tests editing a file and creating a new file but only staging the new file
             File newTestFile = new File("newTestFile.txt");
             newTestFile.createNewFile();
-            BufferedWriter writer = new BufferedWriter(new FileWriter("newTestFile.txt"));
+            writer = new BufferedWriter(new FileWriter("newTestFile.txt"));
             writer.write("insert test content here");
             writer.close();
             writer = new BufferedWriter(new FileWriter ("testDir/testFile2.txt", true));
@@ -33,6 +40,11 @@ public class GitTester {
             // do the commit
             dir.stage("newTestFile.txt");
             dir.commit("Riyan", "part 2");
+
+            // part 3: create third commit
+            // this stages the last file
+            dir.stage("testDir/testFile2.txt");
+            dir.commit("Riyan", "part 3");
         } catch (Exception e) {
             e.printStackTrace();
         }
