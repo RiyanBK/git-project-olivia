@@ -24,7 +24,7 @@ public class GitTester {
             Git dir = new Git();
             dir.stage("testFile.txt");
             dir.stage("testDir");
-            dir.commit("Riyan", "part 1");
+            System.out.println(dir.commit("Riyan", "part 1"));
 
             // part 2: create second commit
             // this tests editing a file and creating a new file but only staging the new file
@@ -38,12 +38,12 @@ public class GitTester {
             writer.close();
             // do the commit
             dir.stage("newTestFile.txt");
-            dir.commit("Riyan", "part 2");
+            System.out.println(dir.commit("Riyan", "part 2"));
 
             // part 3: create third commit
             // this stages the last file
             dir.stage("testDir/testFile2.txt");
-            dir.commit("Riyan", "part 3");
+            System.out.println(dir.commit("Riyan", "part 3"));
 
             // part 4: check out second commit
             dir.checkout("9a79fdcee8a5f88d0e54adbce45c54b335ce7dce");

@@ -109,7 +109,8 @@ public class Git implements GitInterface {
                     }
                     file.createNewFile();
                     BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-                    writer.write(getHashFileContent(line.substring(5, 46)));
+                    String fileHash = line.substring(5,46);
+                    writer.write(getHashFileContent(fileHash));
                     writer.close();
                 }
             }
@@ -124,10 +125,10 @@ public class Git implements GitInterface {
         }
     }
 
-    public String getHashFileContent(String f) {
+    public String getHashFileContent(String hash) {
         StringBuffer sb = new StringBuffer();
         try {
-            BufferedReader reader2 = new BufferedReader(new FileReader("./git/objects/" + f));
+            BufferedReader reader2 = new BufferedReader(new FileReader("./git/objects/" + hash));
             while (reader2.ready()) {
                 sb.append((char) reader2.read());
             }
