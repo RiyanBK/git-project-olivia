@@ -2,12 +2,25 @@ import java.util.Calendar;
 import java.io.*;
 import java.nio.file.*;
 
-public class Commit {
+public class Commit implements GitInterface {
     // private String name;
     // private String summary;
     private String currentDate;
     private String headHash;
     private String treeHash;
+    private String hashOfCommit;
+
+    public void stage (String filePath) {
+        
+    }
+
+    public String commit (String author, String message) {
+        return hashOfCommit;
+    }
+
+    public void checkout (String commitHash) {
+
+    }
 
     public Commit(String author, String message) {
         currentDate = getDate();
@@ -33,11 +46,11 @@ public class Commit {
             FileWriter writer = new FileWriter(tempCommitFile);
             writer.write(commitContent);
             writer.close();
-            String commitHash = Git.sha1(tempCommitFile.toPath());
+            hashOfCommit = Git.sha1(tempCommitFile.toPath());
             writer = new FileWriter(new File("./git/HEAD"));
-            writer.write(commitHash);
+            writer.write(hashOfCommit);
             writer.close();
-            writer = new FileWriter(new File("./git/objects/" + commitHash));
+            writer = new FileWriter(new File("./git/objects/" + hashOfCommit));
             writer.write(commitContent);
             writer.close();
             // creates tree snapshot of the tree and puts in objects
