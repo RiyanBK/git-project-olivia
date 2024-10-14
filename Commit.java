@@ -12,7 +12,7 @@ public class Commit {
     public Commit(String author, String message) {
         currentDate = getDate();
         findHeadHash();
-        if (!headHash.equals("")) { // da39a3ee5e6b4b0d3255bfef95601890afd80709
+        if (!headHash.equals("")) {
             // add extra files from head into index
             writeToIndex();
         }
@@ -39,6 +39,16 @@ public class Commit {
             writer.close();
             writer = new FileWriter(new File("./git/objects/" + commitHash));
             writer.write(commitContent);
+            writer.close();
+            // creates tree snapshot of the tree and puts in objects
+            BufferedReader reader = new BufferedReader(new FileReader("./git/index"));
+            StringBuffer sb = new StringBuffer();
+            while (reader.ready()) {
+                sb.append((char)reader.read());
+            }
+            reader.close();
+            writer = new FileWriter(new File ("./git/objects/" + treeHash));
+            writer.write (sb.toString());
             writer.close();
             // overwrites index once commit is created
             writer = new FileWriter(new File("./git/index"));
@@ -82,11 +92,11 @@ public class Commit {
             }
 
             // part 2 actually writes to the file
-            BufferedReader reader2 = new BufferedReader(new FileReader("./git/objects/" + oldTreeHash));
-            while (reader2.ready()) { // read index list of previous tree
-                Git.createBlob(Paths.get("./git/objects/" + reader.readLine().substring (8,49)), false); // add all files not already listed in index to index
+            reader = new BufferedReader(new FileReader("./git/objects/" + oldTreeHash));
+            while (reader.ready()) { // read index list of previous tree
+                Git.createBlob(Paths.get("./git/objects/" + reader.readLine().substring (5,45)), false); // add all files not already listed in index to index
             }
-            reader2.close();
+            reader.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
