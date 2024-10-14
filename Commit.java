@@ -95,7 +95,10 @@ public class Commit {
             // part 2 actually writes to the file
             reader = new BufferedReader(new FileReader("./git/objects/" + oldTreeHash));
             while (reader.ready()) { // read index list of previous tree
-                Git.createBlob(Paths.get(reader.readLine().substring(46)), false); 
+                String nextBlob = reader.readLine().substring(46);
+                if (!nextBlob.contains("/")) { //really jank technical way of doing this but it works!
+                    Git.createBlob(Paths.get(nextBlob), false);
+                }
                 // add all files not already listed in index to index
             }
             reader.close();
