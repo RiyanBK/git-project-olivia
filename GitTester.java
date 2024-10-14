@@ -1,10 +1,9 @@
 import java.io.File;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.io.*;
-import java.util.*;
 
 public class GitTester {
+    @SuppressWarnings("unused")
     public static void main (String [] args) {
         try {
         //part 1: create initial commit
