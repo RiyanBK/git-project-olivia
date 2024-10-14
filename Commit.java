@@ -79,10 +79,11 @@ public class Commit {
         // currently we have the hash of the commit
         String oldTreeHash = "";
         try {
-            BufferedReader reader = new BufferedReader(new FileReader("./git/objects/" + headHash)); // this finds the
-                                                                                                     // commit
-            // read just after the first 6 characters of the tree ("tree: " + hash
-            // of tree) we just want the hash of the tree
+            // this finds the commit
+            BufferedReader reader = new BufferedReader(new FileReader("./git/objects/" + headHash)); 
+            // read just after the first 6 characters of the tree:
+            // ("tree: " + hash of tree) 
+            // we just want the hash of the tree
             oldTreeHash = reader.readLine();
             oldTreeHash = oldTreeHash.substring(6);
             reader.close();
@@ -94,12 +95,8 @@ public class Commit {
             // part 2 actually writes to the file
             reader = new BufferedReader(new FileReader("./git/objects/" + oldTreeHash));
             while (reader.ready()) { // read index list of previous tree
-                Git.createBlob(Paths.get("./git/objects/" + reader.readLine().substring(5, 45)), false); // add all
-                                                                                                         // files not
-                                                                                                         // already
-                                                                                                         // listed in
-                                                                                                         // index to
-                                                                                                         // index
+                Git.createBlob(Paths.get("./git/objects/" + reader.readLine().substring(5, 45)), false); 
+                // add all files not already listed in index to index
             }
             reader.close();
         } catch (Exception e) {
