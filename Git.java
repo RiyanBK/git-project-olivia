@@ -173,25 +173,31 @@ public class Git {
                 if (parent.equals("")) {
                     String toWrite = "tree " + hash + " " + fileToSave.toFile().getName() + "\n";
                     BufferedReader reader = new BufferedReader(new FileReader ("./git/index"));
+                    int counter = 0;
                     while (reader.ready()) {
                         if (reader.readLine().equals(toWrite)){
-                            sb.append(toWrite);
+                            counter++;
                         }
-                        else {
-                            System.out.println ("already in index");
-                        }
+                    }
+                    if (counter > 0) {
+                        System.out.println ("already exists in index");
+                    } else {
+                        sb.append(toWrite);
                     }
                     reader.close();
                 } else {
                     String toWrite = "tree " + hash + " " + parent + "/" + fileToSave.toFile().getName() + "\n";
                     BufferedReader reader = new BufferedReader(new FileReader ("./git/index"));
+                    int counter = 0;
                     while (reader.ready()) {
                         if (reader.readLine().equals(toWrite)){
-                            sb.append(toWrite);
+                            counter++;
                         }
-                        else {
-                            System.out.println ("already in index");
-                        }
+                    }
+                    if (counter > 0) {
+                        System.out.println ("already exists in index");
+                    } else {
+                        sb.append(toWrite);
                     }
                     reader.close();
                 }
