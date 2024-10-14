@@ -95,7 +95,7 @@ public class Commit {
             // part 2 actually writes to the file
             reader = new BufferedReader(new FileReader("./git/objects/" + oldTreeHash));
             while (reader.ready()) { // read index list of previous tree
-                Git.createBlob(Paths.get("./git/objects/" + reader.readLine().substring(5, 45)), false); 
+                Git.createBlob(Paths.get(reader.readLine().substring(46)), false); 
                 // add all files not already listed in index to index
             }
             reader.close();
@@ -105,7 +105,7 @@ public class Commit {
 
     }
 
-    public void getTreeContents() { // currently only works for index file
+    public void getTreeContents() { 
         // StringBuffer content = new StringBuffer("");
         // try {
         // BufferedReader reader = new BufferedReader(new FileReader(new
