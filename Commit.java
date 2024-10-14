@@ -44,11 +44,11 @@ public class Commit {
             BufferedReader reader = new BufferedReader(new FileReader("./git/index"));
             StringBuffer sb = new StringBuffer();
             while (reader.ready()) {
-                sb.append((char)reader.read());
+                sb.append((char) reader.read());
             }
             reader.close();
-            writer = new FileWriter(new File ("./git/objects/" + treeHash));
-            writer.write (sb.toString());
+            writer = new FileWriter(new File("./git/objects/" + treeHash));
+            writer.write(sb.toString());
             writer.close();
             // overwrites index once commit is created
             writer = new FileWriter(new File("./git/index"));
@@ -94,7 +94,12 @@ public class Commit {
             // part 2 actually writes to the file
             reader = new BufferedReader(new FileReader("./git/objects/" + oldTreeHash));
             while (reader.ready()) { // read index list of previous tree
-                Git.createBlob(Paths.get("./git/objects/" + reader.readLine().substring (5,45)), false); // add all files not already listed in index to index
+                Git.createBlob(Paths.get("./git/objects/" + reader.readLine().substring(5, 45)), false); // add all
+                                                                                                         // files not
+                                                                                                         // already
+                                                                                                         // listed in
+                                                                                                         // index to
+                                                                                                         // index
             }
             reader.close();
         } catch (Exception e) {

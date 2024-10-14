@@ -20,31 +20,36 @@ public class Git {
         // Repository already exists")
         initRepo();
         // System.out.println(initRepoTester());
-        blobTester(Paths.get("/Users/RiyanKadribegovic/Desktop/School/12th/Honors Topics in Computer Science/git-project-olivia"), false);
-        // Path path = Paths.get("/Users/oliviakong/Desktop/everything basically/forkedcodetest/newFolder");
+        blobTester(Paths.get(
+                "/Users/RiyanKadribegovic/Desktop/School/12th/Honors Topics in Computer Science/git-project-olivia"),
+                false);
+        // Path path = Paths.get("/Users/oliviakong/Desktop/everything
+        // basically/forkedcodetest/newFolder");
         // createBlob(path, false);
     }
-  
-    //Tests initRepo() for when directory already exists or doesn't exist yet
-    public static String initRepoTester() throws IOException{
-        //Creates all three directories/files - git, objects and index within git
+
+    // Tests initRepo() for when directory already exists or doesn't exist yet
+    public static String initRepoTester() throws IOException {
+        // Creates all three directories/files - git, objects and index within git
         Path file1 = Paths.get("./git/objects");
         File file2 = new File("./git/index");
         Path file3 = Paths.get("./git");
-        //Tests if repository already exists, which should print "Git repository already exists"
-        if (file1.toFile().exists() && file2.exists()){
+        // Tests if repository already exists, which should print "Git repository
+        // already exists"
+        if (file1.toFile().exists() && file2.exists()) {
             initRepo();
             return "";
         }
-        //Initializes repo
+        // Initializes repo
         initRepo();
-        //Checks if files were created
+        // Checks if files were created
         boolean bool1 = file1.toFile().exists();
         boolean bool2 = file2.exists();
-        //Deletes all the files (have to delete objects and index first as files.delete() only deletes empty directories)
+        // Deletes all the files (have to delete objects and index first as
+        // files.delete() only deletes empty directories)
         boolean delete = file1.toFile().delete() && file2.delete() && file3.toFile().delete();
-        //Checks if files were created and then deleted
-        if (bool1&&bool2&&delete){
+        // Checks if files were created and then deleted
+        if (bool1 && bool2 && delete) {
             return "Initialized repository and deleted files";
         }
         return "Did not initialize repository";
@@ -56,7 +61,7 @@ public class Git {
         // along the way
         Path file1 = Paths.get("./git/objects");
         File file2 = new File("./git/index");
-        File file3 = new File ("./git/HEAD");
+        File file3 = new File("./git/HEAD");
         // Makes directories - will be false if they already exist
         boolean bool1 = file1.toFile().mkdirs();
         boolean bool2 = file2.createNewFile();
@@ -67,22 +72,27 @@ public class Git {
         }
     }
 
-    public static void blobTester(Path path, boolean compress) throws DigestException, NoSuchAlgorithmException, IOException {
+    public static void blobTester(Path path, boolean compress)
+            throws DigestException, NoSuchAlgorithmException, IOException {
         // path = createBlob(path, compress);
         // Path path2 = Paths.get("./git/objects/" + sha1(path));
-        // System.out.println("Copied file exists within objects directory: " + path2.toFile().exists());
-        // // System.out.println("Contents of copied and original are the same: " + (Files.mismatch(path, path2) == -1));
+        // System.out.println("Copied file exists within objects directory: " +
+        // path2.toFile().exists());
+        // // System.out.println("Contents of copied and original are the same: " +
+        // (Files.mismatch(path, path2) == -1));
         // boolean bool1 = path2.toFile().delete();
-        // System.out.println("Path deleted correctly in objects directory in order to reset: " + (bool1));
+        // System.out.println("Path deleted correctly in objects directory in order to
+        // reset: " + (bool1));
         // checkIndex(path);
         // if (compress) {
-        //     boolean bool2 = path.toFile().delete();
-        //     System.out.println("Unzipped path deleted correctly in order to reset: " + (bool2));
+        // boolean bool2 = path.toFile().delete();
+        // System.out.println("Unzipped path deleted correctly in order to reset: " +
+        // (bool2));
         // }
         // Create the blob (or tree) from the file or directory
 
         Path resultingPath = createBlob(path, compress);
-        
+
         String pathHash = sha1(resultingPath);
         Path objectsPath = Paths.get("./git/objects/" + pathHash);
 
@@ -106,7 +116,8 @@ public class Git {
         if (allObjects != null) {
             for (File object : allObjects) {
                 boolean objectDeletionStatus = object.delete();
-                System.out.println("Deleted object in objects folder: " + object.getName() + " : " + objectDeletionStatus);
+                System.out.println(
+                        "Deleted object in objects folder: " + object.getName() + " : " + objectDeletionStatus);
             }
         }
         System.out.println("All files in objects directory cleared.");
@@ -114,17 +125,17 @@ public class Git {
 
     public static String sha1(Path path) throws DigestException, IOException, NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("SHA-1");
-    
+
         // if it's a directory
         if (path.toFile().isDirectory()) {
             File[] allFiles = path.toFile().listFiles();
             StringBuilder indexContent = new StringBuilder();
-    
+
             if (allFiles != null && allFiles.length > 0) {
                 for (File file : allFiles) {
                     Path filePath = file.toPath();
                     String fileSha1 = sha1(filePath);
-    
+
                     if (file.isDirectory()) { // if directory
                         indexContent.append("tree ");
                     } else { // if file
@@ -139,7 +150,7 @@ public class Git {
         } else {
             md.update(Files.readAllBytes(path));
         }
-    
+
         byte[] digest = md.digest();
         BigInteger fileInt = new BigInteger(1, digest);
         String hashText = fileInt.toString(16);
@@ -149,12 +160,15 @@ public class Git {
         return hashText;
     }
 
-    //Creates blob using fileToSave, compress - zip-compression true or false, returns the path of the unzipped file
-    public static Path createBlob(Path fileToSave, boolean compress) throws DigestException, NoSuchAlgorithmException, IOException {
+    // Creates blob using fileToSave, compress - zip-compression true or false,
+    // returns the path of the unzipped file
+    public static Path createBlob(Path fileToSave, boolean compress)
+            throws DigestException, NoSuchAlgorithmException, IOException {
         return createBlob(fileToSave, compress, "");
     }
 
-    private static Path createBlob(Path fileToSave, boolean compress, String parent) throws DigestException, NoSuchAlgorithmException, IOException {
+    private static Path createBlob(Path fileToSave, boolean compress, String parent)
+            throws DigestException, NoSuchAlgorithmException, IOException {
         StringBuilder sb = new StringBuilder();
         // if file is a directory
         if (fileToSave.toFile().isDirectory()) {
@@ -174,30 +188,30 @@ public class Git {
                 // index file line
                 if (parent.equals("")) {
                     String toWrite = "tree " + hash + " " + fileToSave.toFile().getName() + "\n";
-                    BufferedReader reader = new BufferedReader(new FileReader ("./git/index"));
+                    BufferedReader reader = new BufferedReader(new FileReader("./git/index"));
                     int counter = 0;
                     while (reader.ready()) {
-                        if (reader.readLine().equals(toWrite)){
+                        if (reader.readLine().equals(toWrite)) {
                             counter++;
                         }
                     }
                     if (counter > 0) {
-                        System.out.println ("already exists in index");
+                        System.out.println("already exists in index");
                     } else {
                         sb.append(toWrite);
                     }
                     reader.close();
                 } else {
                     String toWrite = "tree " + hash + " " + parent + "/" + fileToSave.toFile().getName() + "\n";
-                    BufferedReader reader = new BufferedReader(new FileReader ("./git/index"));
+                    BufferedReader reader = new BufferedReader(new FileReader("./git/index"));
                     int counter = 0;
                     while (reader.ready()) {
-                        if (reader.readLine().equals(toWrite)){
+                        if (reader.readLine().equals(toWrite)) {
                             counter++;
                         }
                     }
                     if (counter > 0) {
-                        System.out.println ("already exists in index");
+                        System.out.println("already exists in index");
                     } else {
                         sb.append(toWrite);
                     }
@@ -210,7 +224,8 @@ public class Git {
                     fileToSave = unzip(str1, fileToSave.getFileName().toString());
                 }
 
-                String currentParent = parent.isEmpty() ? fileToSave.toFile().getName() : parent + "/" + fileToSave.toFile().getName();
+                String currentParent = parent.isEmpty() ? fileToSave.toFile().getName()
+                        : parent + "/" + fileToSave.toFile().getName();
                 sb.append("tree " + sha1(fileToSave) + " " + currentParent + "\n");
 
                 for (File file : filesInside) {
@@ -232,13 +247,14 @@ public class Git {
             // copies data
             Files.copy(fileToSave, hash, REPLACE_EXISTING);
 
-            String str = "blob " + sha1(fileToSave) + " " + (parent.isEmpty() ? "" : parent + "/") + fileToSave.getFileName().toString() + "\n";
+            String str = "blob " + sha1(fileToSave) + " " + (parent.isEmpty() ? "" : parent + "/")
+                    + fileToSave.getFileName().toString() + "\n";
             sb.append(str);
         }
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("./git/index", true))) {
             bw.write(sb.toString());
         }
-        return(fileToSave);
+        return (fileToSave);
     }
 
     // zip-compression method
@@ -326,7 +342,7 @@ public class Git {
     }
 
     public static void deleteEverything(Path path) {
-        File file = new File (path.toString());
+        File file = new File(path.toString());
         if (file.listFiles() != null) {
             for (File childFile : file.listFiles()) {
                 if (childFile.isDirectory()) {
