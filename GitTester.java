@@ -1,4 +1,3 @@
-import java.io.File;
 import java.nio.file.Paths;
 import java.io.*;
 
@@ -45,6 +44,9 @@ public class GitTester {
             // this stages the last file
             dir.stage("testDir/testFile2.txt");
             dir.commit("Riyan", "part 3");
+
+            // part 4: check out second commit
+            dir.checkout("9a79fdcee8a5f88d0e54adbce45c54b335ce7dce");
         } catch (Exception e) {
             e.printStackTrace();
         }

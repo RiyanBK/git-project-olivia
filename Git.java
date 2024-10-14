@@ -82,7 +82,60 @@ public class Git implements GitInterface {
     }
 
     public void checkout(String commitHash) {
+        hashOfCommit = commitHash;
+        try {
+            // go through the current tree and delete everything
+            BufferedReader reader = new BufferedReader(new FileReader("./git/objects/" + treeHash));
+            while (reader.ready()) {
+                Files.deleteIfExists(Paths.get(reader.readLine().substring(46)));
+            }
+            reader.close();
+            // add everything from the previous tree back in
+            reader = new BufferedReader(new FileReader("./git/objects/" + commitHash));
+            treeHash = reader.readLine().substring(6);
+            reader.close();
+            reader = new BufferedReader(new FileReader("./git/objects/" + treeHash));
+            while (reader.ready()) {
+                String line = reader.readLine();
+                String fileName = line.substring(46);
+                File file = new File(fileName);
+                if (file.isDirectory()) {
+                    file.mkdirs();
+                } else {
+                    if (fileName.contains("/")) {
+                        int charIndex = fileName.lastIndexOf("/");
+                        File newDir = new File(fileName.substring(0, charIndex));
+                        newDir.mkdirs();
+                    }
+                    file.createNewFile();
+                    BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+                    writer.write(getHashFileContent(line.substring(5, 46)));
+                    writer.close();
+                }
+            }
+            reader.close();
 
+            // put the correct hash in head
+            BufferedWriter writer = new BufferedWriter(new FileWriter ("./git/HEAD"));
+            writer.write(commitHash);
+            writer.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String getHashFileContent(String f) {
+        StringBuffer sb = new StringBuffer();
+        try {
+            BufferedReader reader2 = new BufferedReader(new FileReader("./git/objects/" + f));
+            while (reader2.ready()) {
+                sb.append((char) reader2.read());
+            }
+            reader2.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return sb.toString();
     }
 
     public void findHeadHash() {
@@ -119,18 +172,19 @@ public class Git implements GitInterface {
 
             // part 2 actually writes to the file
             reader = new BufferedReader(new FileReader("./git/objects/" + oldTreeHash));
-            BufferedWriter writer = new BufferedWriter(new FileWriter ("./git/index", true));
+            BufferedWriter writer = new BufferedWriter(new FileWriter("./git/index", true));
             while (reader.ready()) { // read index list of previous tree
                 String blobLine = reader.readLine();
-                if (blobLine.equals("")){
+                if (blobLine.equals("")) {
                     break;
                 }
                 String nextBlob = blobLine.substring(46);
                 if (!fileInIndex(nextBlob)) {
                     writer.write(blobLine + "\n");
                 }
-                // if (!nextBlob.contains("/")) { // really jank technical way of doing this but it works!
-                //     Git.createBlob(Paths.get(nextBlob), false);
+                // if (!nextBlob.contains("/")) { // really jank technical way of doing this but
+                // it works!
+                // Git.createBlob(Paths.get(nextBlob), false);
                 // }
                 // add all files not already listed in index to index
             }
@@ -142,7 +196,7 @@ public class Git implements GitInterface {
 
     }
 
-    public boolean fileInIndex (String fileName) {
+    public boolean fileInIndex(String fileName) {
         int counter = 0;
         try {
             BufferedReader reader = new BufferedReader(new FileReader("./git/index"));
@@ -159,7 +213,7 @@ public class Git implements GitInterface {
             return true;
         } else {
             return false;
-        }   
+        }
     }
 
     public void getTreeContents() {
