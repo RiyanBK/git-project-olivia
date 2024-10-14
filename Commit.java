@@ -26,21 +26,20 @@ public class Commit {
         String commitContent = toCommit.toString();
         try {
             // create a file to put the commit in
-            // create a blob of it
+            // make the commit file
             // get that hash and put it in head
 
-            Files.createTempFile("contentToHash", ".txt");
-            FileWriter writer = new FileWriter(new File("./contentToHash"));
+            File tempCommitFile = File.createTempFile("contentToHash", null);
+            FileWriter writer = new FileWriter(tempCommitFile);
             writer.write(commitContent);
             writer.close();
-            String commitHash = Git.sha1(Paths.get("./contentToHash"));
+            String commitHash = Git.sha1(tempCommitFile.toPath());
             writer = new FileWriter(new File("./git/HEAD"));
             writer.write(commitHash);
             writer.close();
             writer = new FileWriter(new File("./git/objects/" + commitHash));
             writer.write(commitContent);
             writer.close();
-
             // overwrites index once commit is created
             writer = new FileWriter(new File("./git/index"));
             writer.write("");
@@ -72,17 +71,10 @@ public class Commit {
         try {
             BufferedReader reader = new BufferedReader(new FileReader("./git/objects/" + headHash)); // this finds the
                                                                                                      // commit
-            // read just after the first 8 characters of the second line ("parent: " + hash
-            // of parent) we just want the hash of the parent
-            reader.readLine();
-            // oldTreeHash = (String)reader.readLine();
-            for (int i = 0; i < 8; i++) {
-                reader.read();
-            }
-            while (reader.ready()) {
-                oldTreeHash = oldTreeHash + (char) (reader.read());
-            }
-            // oldTreeHash = oldTreeHash.substring(8);
+            // read just after the first 6 characters of the tree ("tree: " + hash
+            // of tree) we just want the hash of the tree
+            oldTreeHash = reader.readLine();
+            oldTreeHash = oldTreeHash.substring(6);
             reader.close();
 
             if (oldTreeHash.equals("")) {

@@ -144,7 +144,11 @@ public class Git {
     
         byte[] digest = md.digest();
         BigInteger fileInt = new BigInteger(1, digest);
-        return fileInt.toString(16);
+        String hashText = fileInt.toString(16);
+        while (hashText.length() < 40) {
+            hashText = "0" + hashText;
+        }
+        return hashText;
     }
 
     //Creates blob using fileToSave, compress - zip-compression true or false, returns the path of the unzipped file
