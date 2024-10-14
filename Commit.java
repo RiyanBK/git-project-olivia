@@ -71,7 +71,7 @@ public class Commit {
         String oldTreeHash = "";
         try {
             BufferedReader reader = new BufferedReader(new FileReader("./git/objects/" + headHash)); //this finds the commit
-            //read just after the first 6 characters of the second line ("parent: " + hash of parent) we just want the hash of the parent
+            //read just after the first 8 characters of the second line ("parent: " + hash of parent) we just want the hash of the parent
             reader.readLine();
             //oldTreeHash = (String)reader.readLine();
             for (int i = 0; i < 8; i++){
@@ -80,7 +80,7 @@ public class Commit {
             while(reader.ready()) {
                 oldTreeHash = oldTreeHash + (char)(reader.read());
             }
-            oldTreeHash = oldTreeHash.substring(6);
+            //oldTreeHash = oldTreeHash.substring(8);
             reader.close();
         } catch (Exception e) {
             e.printStackTrace();
