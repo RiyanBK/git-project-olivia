@@ -25,9 +25,9 @@ public class Commit {
         toCommit.append("\nmessage: " + message);
         String commitContent = toCommit.toString();
         try {
-            //create a file to put the commit in
-            //create a blob of it
-            //get that hash and put it in head
+            // create a file to put the commit in
+            // create a blob of it
+            // get that hash and put it in head
 
             Files.createTempFile("contentToHash", ".txt");
             FileWriter writer = new FileWriter(new File("./contentToHash"));
@@ -37,11 +37,11 @@ public class Commit {
             writer = new FileWriter(new File("./git/HEAD"));
             writer.write(commitHash);
             writer.close();
-            writer = new FileWriter(new File ("./git/objects/" + commitHash));
-            writer.write (commitContent);
+            writer = new FileWriter(new File("./git/objects/" + commitHash));
+            writer.write(commitContent);
             writer.close();
 
-            //overwrites index once commit is created
+            // overwrites index once commit is created
             writer = new FileWriter(new File("./git/index"));
             writer.write("");
             writer.close();
@@ -66,33 +66,39 @@ public class Commit {
     }
 
     public void writeToIndex() {
-       //part 1 finds the hash of the previous tree
-        //currently we have the hash of the commit
+        // part 1 finds the hash of the previous tree
+        // currently we have the hash of the commit
         String oldTreeHash = "";
         try {
-            BufferedReader reader = new BufferedReader(new FileReader("./git/objects/" + headHash)); //this finds the commit
-            //read just after the first 8 characters of the second line ("parent: " + hash of parent) we just want the hash of the parent
+            BufferedReader reader = new BufferedReader(new FileReader("./git/objects/" + headHash)); // this finds the
+                                                                                                     // commit
+            // read just after the first 8 characters of the second line ("parent: " + hash
+            // of parent) we just want the hash of the parent
             reader.readLine();
-            //oldTreeHash = (String)reader.readLine();
-            for (int i = 0; i < 8; i++){
+            // oldTreeHash = (String)reader.readLine();
+            for (int i = 0; i < 8; i++) {
                 reader.read();
             }
-            while(reader.ready()) {
-                oldTreeHash = oldTreeHash + (char)(reader.read());
+            while (reader.ready()) {
+                oldTreeHash = oldTreeHash + (char) (reader.read());
             }
-            //oldTreeHash = oldTreeHash.substring(8);
+            // oldTreeHash = oldTreeHash.substring(8);
             reader.close();
+
+            if (oldTreeHash.equals("")) {
+                return;
+            }
+
+            // part 2 actually writes to the file
+            BufferedReader reader2 = new BufferedReader(new FileReader("./git/objects/" + oldTreeHash));
+            while (reader2.ready()) { // read index list of previous tree
+                Git.createBlob(Paths.get("./git/objects/" + reader.readLine().substring (8,49)), false); // add all files not already listed in index to index
+            }
+            reader2.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (oldTreeHash.equals ("")) {
-            return;
-        }
 
-        //part 2 actually writes to the file
-        //read index list of previous tree
-        //add all files not already listed in index to index
-        //end
     }
 
     public void getTreeContents() { // currently only works for index file
